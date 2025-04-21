@@ -1,19 +1,16 @@
-
 import tkinter as tk
 import random
-import shutil
 from tkinter import *
 from PIL import Image
+import shutil
 
 speed = -5
 
 shutil.unpack_archive("Python/Программы/Игры/Dino/game_files.zip", "Python/Программы/Игры/Dino/game_files")
 
-
 def delete():
     shutil.rmtree("Python/Программы/Игры/Dino/game_files")
     root.destroy()
-
 
 class DinoGame:
     def __init__(self, master):
@@ -24,12 +21,10 @@ class DinoGame:
         self.score_label = tk.Label(master, text="Счёт: 0")
         self.score_label.pack(pady=5, anchor="e", padx=5)
         root.protocol("WM_DELETE_WINDOW", delete)
-        dinoPic = PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png")
+        self.dinoPic = PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png")
         self.canvas = tk.Canvas(master, bg="white", width=600, height=400)
         self.canvas.pack(pady=5, padx=5)
-        self.dino = self.canvas.create_image(100, 300, image=dinoPic)
-        self.canvas.tag_raise(dinoPic)
-        self.canvas.update()
+        self.dino = self.canvas.create_image(100, 300, image=self.dinoPic)
         self.obstacle = None
         self.velocity = 0
         self.gravity = 1
@@ -80,8 +75,8 @@ class DinoGame:
     def check_collision(self):
         dino_coords = self.canvas.coords(self.dino)
         obstacle_coords = self.canvas.coords(self.obstacle)
-        if (dino_coords[2] > obstacle_coords[0] and dino_coords[0] < obstacle_coords[2] and
-            dino_coords[3] > obstacle_coords[1]):
+        if (dino_coords[0] > obstacle_coords[0] and dino_coords[0] < obstacle_coords[2] and
+            dino_coords[1] > obstacle_coords[1]):
             return True
         return False
 
@@ -90,13 +85,12 @@ class DinoGame:
         speed = -5
         self.canvas.delete("all")
         self.create_obstacle()
-        self.dino = self.canvas.create_rectangle(50, 300, 100, 350, fill="green")
+        self.dino = self.canvas.create_image(100, 300, image=self.dinoPic)
         self.jump_button.configure(text="Прыжок!", command=self.jump)
         self.score = 0
         self.score_label.config(text="Счёт: 0")
         self.is_game_over = False
         self.update_game()
-
 
 if __name__ == "__main__":
     root = tk.Tk()
