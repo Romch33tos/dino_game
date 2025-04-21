@@ -39,9 +39,8 @@ class DinoGame:
         self.update_game()
 
     def create_obstacle(self):
-        x_position = 800
-        height = random.randint(50, 120)
-        self.obstacle = self.canvas.create_rectangle(x_position, 350 - height, x_position + 20, 350, fill="red")
+        self.cactiPic = PhotoImage(file="Python/Программы/Игры/Dino/game_files/cacti.png")
+        self.obstacle = self.canvas.create_image(800, 300, image=self.cactiPic)
 
     def jump(self, event=None):
         if not self.jumping and not self.is_game_over:
