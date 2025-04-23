@@ -1,6 +1,6 @@
+from tkinter import *
 import tkinter as tk
 import random
-from tkinter import *
 import shutil
 
 list = ["Python/Программы/Игры/Dino/game_files/cacti.png", 
@@ -23,30 +23,32 @@ class DinoGame:
         self.master.geometry("600x600")
         self.master.resizable(False, False)
         
-        self.score_label = tk.Label(master, text="Счёт: 0")
-        self.score_label.pack(pady=5, anchor="e", padx=5)
+        self.score_label = tk.Label(master, text = "Счёт: 0")
+        self.score_label.pack(pady = 5, anchor = "e", padx = 5)
         root.protocol("WM_DELETE_WINDOW", delete)
 
         self.dino_frames = [
-            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png"), PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino2.png"),
-            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino2.png"), PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino3.png"),
-            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino3.png"),
-            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png"),
-            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png")        
+            PhotoImage(file = "Python/Программы/Игры/Dino/game_files/dino.png"),
+            PhotoImage(file = "Python/Программы/Игры/Dino/game_files/dino2.png"),
+            PhotoImage(file = "Python/Программы/Игры/Dino/game_files/dino2.png"),
+            PhotoImage(file = "Python/Программы/Игры/Dino/game_files/dino3.png"),
+            PhotoImage(file = "Python/Программы/Игры/Dino/game_files/dino3.png"),
+            PhotoImage(file = "Python/Программы/Игры/Dino/game_files/dino.png"),
+            PhotoImage(file = "Python/Программы/Игры/Dino/game_files/dino.png")
         ]
+
+        self.cloud = PhotoImage(file = "Python/Программы/Игры/Dino/game_files/cloud.png")
+        self.bg = PhotoImage(file = "Python/Программы/Игры/Dino/game_files/bg.png")
+
+        self.canvas = tk.Canvas(master, bg = "white", width = 600, height = 400)
+        self.canvas.pack(pady = 5, padx = 5)
+
+        self.canvas.create_image(300, 200, image = self.bg)
         
-        self.cloud = PhotoImage(file="Python/Программы/Игры/Dino/game_files/cloud.png")
-        self.bg = PhotoImage(file="Python/Программы/Игры/Dino/game_files/bg.png")
+        self.cloud1 = self.canvas.create_image(100, 50, image = self.cloud)
+        self.cloud2 = self.canvas.create_image(400, 80, image = self.cloud)
 
-        self.canvas = tk.Canvas(master, bg="white", width=600, height=400)
-        self.canvas.pack(pady=5, padx=5)
-
-        self.canvas.create_image(300, 200, image=self.bg)
-        
-        self.cloud1 = self.canvas.create_image(100, 50, image=self.cloud)
-        self.cloud2 = self.canvas.create_image(400, 80, image=self.cloud)
-
-        self.dino = self.canvas.create_image(100, 310, image=self.dino_frames[0])
+        self.dino = self.canvas.create_image(100, 310, image = self.dino_frames[0])
         self.obstacle = None
         self.velocity = 0
         self.gravity = 1
@@ -55,20 +57,17 @@ class DinoGame:
         self.is_game_over = False
         self.current_frame = 0
 
-        self.jump_button = tk.Button(master, text="Прыжок!", command=self.jump, width=16, height=2)
-        self.jump_button.pack(pady=15)
-
-        self.canvas.bind("<KeyPress-Up>", self.jump)
-        self.canvas.focus_set()
+        self.jump_button = tk.Button(master, text = "Прыжок!", command=self.jump, width = 16, height = 2)
+        self.jump_button.pack(pady = 15)     
 
         self.create_obstacle()
         self.update_game()
 
     def create_obstacle(self):
-        self.cactiPic = PhotoImage(file=random.choice(list))
-        self.obstacle = self.canvas.create_image(800, 310, image=self.cactiPic)
+        self.cactiPic = PhotoImage(file = random.choice(list))
+        self.obstacle = self.canvas.create_image(800, 310, image = self.cactiPic)
 
-    def jump(self, event=None):
+    def jump(self, event = None):
         if not self.jumping and not self.is_game_over:
             self.jumping = True
             self.velocity = -19
@@ -94,14 +93,14 @@ class DinoGame:
                 self.canvas.create_text(300, 200, text="Конец игры!", font=("Arial", 12), fill="red")
                 self.jump_button.configure(text="Ещё раз?", command=self.restart_game)
             else:
-                if obstacle_coords[0] < 0:
+                if obstacle_coords[0] < 0: 
                     self.canvas.delete(self.obstacle)
                     self.score += 1
                     self.score_label.config(text=f"Счёт: {self.score}")
-                    speed -= 0.5
+                    speed -= 0.2 
                     self.create_obstacle()
 
-            self.move_clouds()
+            self.move_clouds()   
             self.master.after(18, self.update_game)
 
     def move_clouds(self):
@@ -116,7 +115,6 @@ class DinoGame:
     def check_collision(self):
         dino_coords = self.canvas.coords(self.dino)
         obstacle_coords = self.canvas.coords(self.obstacle)
-
         if (dino_coords[0] < obstacle_coords[0] + self.cactiPic.width() and
             dino_coords[0] + self.dino_frames[0].width() > obstacle_coords[0] and
             dino_coords[1] + self.dino_frames[0].height() > obstacle_coords[1]):
