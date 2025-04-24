@@ -4,10 +4,10 @@ import random
 import shutil
 
 obstacle_images = [
-    "Python/Программы/Игры/Dino/game_files/cacti1.png",
-    "Python/Программы/Игры/Dino/game_files/cacti2.png",
-    "Python/Программы/Игры/Dino/game_files/cacti3.png",
-    "Python/Программы/Игры/Dino/game_files/cacti4.png",
+    "Python/Программы/Игры/Dino/game_files/cacti1.png", 
+    "Python/Программы/Игры/Dino/game_files/cacti2.png", 
+    "Python/Программы/Игры/Dino/game_files/cacti3.png", 
+    "Python/Программы/Игры/Dino/game_files/cacti4.png", 
     "Python/Программы/Игры/Dino/game_files/cacti5.png"
 ]
 
@@ -19,7 +19,6 @@ ptero_images = [
 speed = -7.5
 
 def delete():
-    #shutil.rmtree("Python/Программы/Игры/Dino/game_files")
     root.destroy()
 
 class DinoGame:
@@ -34,19 +33,17 @@ class DinoGame:
         self.dino_run_frames = [
             PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png"),
             PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino2.png"),
-            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino3.png")
+            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino3.png")    
         ]
-
+        
         self.dino_jump_img = PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png")
+        self.dino_game_over_img = PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino5.png")
         self.cloud = PhotoImage(file="Python/Программы/Игры/Dino/game_files/cloud.png")
         self.bg = PhotoImage(file="Python/Программы/Игры/Dino/game_files/bg.png")
-
-        self.canvas = tk.Canvas(master, bg="white", width=600, height=400)
+        self.canvas = tk.Canvas(master, bg="white", width=600, height=400)    
         self.canvas.bind("<ButtonPress-1>", self.on_canvas_click)
         self.canvas.pack()
-
         self.canvas.create_image(300, 200, image=self.bg)
-
         self.cloud1 = self.canvas.create_image(100, 50, image=self.cloud)
         self.cloud2 = self.canvas.create_image(400, 80, image=self.cloud)
 
@@ -62,11 +59,11 @@ class DinoGame:
         self.is_ptero = False
         self.animation_counter = 0
         self.ptero_animation_counter = 0
-
+        
     def start_game(self):
-        global speed
+        global speed 
         self.is_game_over = False
-        self.score = 0
+        self.score = 0        
         self.speed = -7.5
         self.canvas.delete("all")
         self.canvas.create_image(300, 200, image=self.bg)
@@ -108,12 +105,14 @@ class DinoGame:
                 if self.animation_counter % 4 == 0:
                     self.current_frame = (self.current_frame + 1) % len(self.dino_run_frames)
                     self.canvas.itemconfig(self.dino, image=self.dino_run_frames[self.current_frame])
+
             if self.is_ptero and self.obstacle:
                 self.ptero_animation_counter += 1
                 if self.ptero_animation_counter % 10 == 0:
                     self.ptero_frame = (self.ptero_frame + 1) % len(ptero_images)
                     self.cactiPic = PhotoImage(file=ptero_images[self.ptero_frame])
                     self.canvas.itemconfig(self.obstacle, image=self.cactiPic)
+
             if self.jumping:
                 self.canvas.move(self.dino, 0, self.velocity)
                 self.velocity += self.gravity
@@ -121,25 +120,29 @@ class DinoGame:
                     self.canvas.move(self.dino, 0, 300 - self.canvas.coords(self.dino)[1])
                     self.jumping = False
                     self.canvas.itemconfig(self.dino, image=self.dino_run_frames[0])
+
             self.canvas.move(self.obstacle, speed, 0)
             obstacle_coords = self.canvas.coords(self.obstacle)
             if self.check_collision():
                 self.is_game_over = True
+                self.canvas.itemconfig(self.dino, image=self.dino_game_over_img)
                 self.canvas.create_text(300, 200, text="Конец игры!", font=("Arial", 12), fill="black")
-                speed = -7.5
+                speed = -7.5         
             else:
-                if obstacle_coords[0] < -50:
+                if obstacle_coords[0] < -50: 
                     self.canvas.delete(self.obstacle)
                     self.score += 1
-                    self.update_score()
-                    speed -= 0.1
+                    self.update_score()  
+                    speed -= 0.1 
                     self.create_obstacle()
-            self.move_clouds()
-            self.master.after(17, self.update_game)
+
+            self.move_clouds()   
+            self.master.after(17, self.update_game)  
 
     def move_clouds(self):
         self.canvas.move(self.cloud1, speed * 0.5, 0)
         self.canvas.move(self.cloud2, speed * 0.5, 0)
+
         if self.canvas.coords(self.cloud1)[0] < -50:
             self.canvas.move(self.cloud1, 700, 0)
         if self.canvas.coords(self.cloud2)[0] < -50:
@@ -148,10 +151,13 @@ class DinoGame:
     def check_collision(self):
         dino_coords = self.canvas.coords(self.dino)
         obstacle_coords = self.canvas.coords(self.obstacle)
+
         if not dino_coords or not obstacle_coords:
             return False
+
         dino_width = self.dino_jump_img.width() if self.jumping else self.dino_run_frames[0].width()
         dino_height = self.dino_jump_img.height() if self.jumping else self.dino_run_frames[0].height()
+
         if self.is_ptero:
             if (dino_coords[0] < obstacle_coords[0] + self.cactiPic.width() and
                 dino_coords[0] + dino_width > obstacle_coords[0] and
@@ -165,7 +171,7 @@ class DinoGame:
                 dino_coords[1] + dino_height > obstacle_coords[1]):
                 return True
         return False
-
+    
     def update_score(self):
         self.canvas.itemconfig(self.score_text, text=f"Счёт: {self.score}")
 
