@@ -4,10 +4,11 @@ import random
 import shutil
 
 obstacle_images = [
+    "Python/Программы/Игры/Dino/game_files/cacti.png",   
     "Python/Программы/Игры/Dino/game_files/cacti.png",
     "Python/Программы/Игры/Dino/game_files/cacti2.png",
     "Python/Программы/Игры/Dino/game_files/cacti3.png",
-    "Python/Программы/Игры/Dino/game_files/cacti4.png"
+    "Python/Программы/Игры/Dino/game_files/cacti3.png"
 ]
 
 speed = -6.5
@@ -22,30 +23,29 @@ class DinoGame:
     def __init__(self, master):
         self.master = master
         self.master.title("Динозаврик")
-        self.master.geometry("600x460")
+        self.master.geometry("600x400")
         self.master.resizable(False, False)
 
-        self.score_label = tk.Label(master, text="Счёт: 0")
-        self.score_label.pack(pady=5, anchor="e", padx=5)
         root.protocol("WM_DELETE_WINDOW", delete)
 
         self.dino_frames = [
             PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png"),
+            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png"),         
             PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino2.png"),
-            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino2.png"),
+            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino2.png"),           
             PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino3.png"),
+            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino3.png"),           
             PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino3.png"),
-            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png"),
-            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png")
+            PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino3.png")          
         ]
 
         self.cloud = PhotoImage(file="Python/Программы/Игры/Dino/game_files/cloud.png")
         self.bg = PhotoImage(file="Python/Программы/Игры/Dino/game_files/bg.png")
 
-        self.canvas = tk.Canvas(master, bg="white", width=600, height=400)
+        self.canvas = tk.Canvas(master, bg="white", width=600, height=400)    
         self.canvas.bind("<ButtonPress-1>", self.on_canvas_click)
-        self.canvas.pack(pady=5, padx=5)
-
+        self.canvas.pack()
+        
         self.canvas.create_image(300, 200, image=self.bg)
 
         self.cloud1 = self.canvas.create_image(100, 50, image=self.cloud)
@@ -59,18 +59,20 @@ class DinoGame:
         self.score = 0
         self.is_game_over = True
         self.current_frame = 0
-
+        
     def start_game(self):
+        global speed 
         self.is_game_over = False
-        self.score = 0
-        self.score_label.config(text="Счёт: 0")
+        self.score = 0        
         self.speed = -6.5
         self.canvas.delete("all")
         self.canvas.create_image(300, 200, image=self.bg)
         self.cloud1 = self.canvas.create_image(100, 50, image=self.cloud)
         self.cloud2 = self.canvas.create_image(400, 80, image=self.cloud)
+        self.score_text = self.canvas.create_text(590, 10, text="Счёт: 0", font=("Arial", 8), fill="black", anchor="ne")
         self.create_obstacle()
         self.dino = self.canvas.create_image(100, 310, image=self.dino_frames[0])
+        self.update_score()
         self.update_game()
 
     def on_canvas_click(self, event):
@@ -106,17 +108,19 @@ class DinoGame:
 
             if self.check_collision():
                 self.is_game_over = True
-                self.canvas.create_text(300, 200, text="Конец игры!", font=("Arial", 12), fill="red")
+                self.canvas.create_text(300, 200, text="Конец игры!", font=("Arial", 12), fill="black")
+                speed = -6.5         
             else:
-                if obstacle_coords[0] < 0:
+                if obstacle_coords[0] < 0: 
                     self.canvas.delete(self.obstacle)
                     self.score += 1
-                    self.score_label.config(text=f"Счёт: {self.score}")
-                    speed -= 0.2
+                    self.update_score()  
+
+                    speed -= 0.1 
                     self.create_obstacle()
 
-            self.move_clouds()
-            self.master.after(18, self.update_game)
+            self.move_clouds()   
+            self.master.after(17, self.update_game)  
 
     def move_clouds(self):
         self.canvas.move(self.cloud1, speed * 0.5, 0)
@@ -136,6 +140,9 @@ class DinoGame:
             dino_coords[1] + self.dino_frames[0].height() > obstacle_coords[1]):
             return True
         return False
+    
+    def update_score(self):
+        self.canvas.itemconfig(self.score_text, text=f"Счёт: {self.score}")
 
 if __name__ == "__main__":
     root = tk.Tk()
