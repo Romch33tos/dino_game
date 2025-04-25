@@ -37,7 +37,10 @@ class DinoGame:
         
         self.dino_jump_img = PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png")
         self.dino_game_over_img = PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino5.png")
-        self.cloud = PhotoImage(file="Python/Программы/Игры/Dino/game_files/cloud.png")
+
+        self.cloud_image = PhotoImage(file="Python/Программы/Игры/Dino/game_files/cloud.png")
+        self.cloud_image2 = PhotoImage(file="Python/Программы/Игры/Dino/game_files/cloud2.png")
+        
         self.bg = PhotoImage(file="Python/Программы/Игры/Dino/game_files/bg.png")
         self.ground_texture = PhotoImage(file="Python/Программы/Игры/Dino/game_files/texture.png")
 
@@ -46,9 +49,6 @@ class DinoGame:
         self.canvas.pack()
         
         self.canvas.create_image(300, 200, image=self.bg)
-
-        self.cloud1 = self.canvas.create_image(100, 50, image=self.cloud)
-        self.cloud2 = self.canvas.create_image(400, 80, image=self.cloud)
 
         self.ground1 = self.canvas.create_image(0, 315, image=self.ground_texture, anchor='nw')
         self.ground2 = self.canvas.create_image(600, 315, image=self.ground_texture, anchor='nw')
@@ -74,8 +74,10 @@ class DinoGame:
         self.canvas.create_image(300, 200, image=self.bg)
         self.ground1 = self.canvas.create_image(0, 315, image=self.ground_texture, anchor='nw')
         self.ground2 = self.canvas.create_image(600, 315, image=self.ground_texture, anchor='nw')
-        self.cloud1 = self.canvas.create_image(100, 50, image=self.cloud)
-        self.cloud2 = self.canvas.create_image(400, 80, image=self.cloud)
+        
+        self.cloud1 = self.canvas.create_image(700, 50, image=self.cloud_image)
+        self.cloud2 = self.canvas.create_image(1000, 80, image=self.cloud_image2)
+        
         self.score_text = self.canvas.create_text(590, 10, text="Счёт: 0", font=("Arial", 8), fill="black", anchor="ne")
         self.create_obstacle()
         self.dino = self.canvas.create_image(100, 310, image=self.dino_run_frames[0])
@@ -89,7 +91,7 @@ class DinoGame:
             self.jump()
 
     def create_obstacle(self):
-        self.is_ptero = random.random() < 0.2
+        self.is_ptero = random.random() < 0.3
         if self.is_ptero:
             y_pos = random.choice([220, 280, 300])
             self.cactiPic = PhotoImage(file=random.choice(ptero_images))
@@ -167,10 +169,13 @@ class DinoGame:
     def check_collision(self):
         dino_coords = self.canvas.coords(self.dino)
         obstacle_coords = self.canvas.coords(self.obstacle)
+
         if not dino_coords or not obstacle_coords:
             return False
+
         dino_width = self.dino_jump_img.width() if self.jumping else self.dino_run_frames[0].width()
         dino_height = self.dino_jump_img.height() if self.jumping else self.dino_run_frames[0].height()
+
         if self.is_ptero:
             if (dino_coords[0] < obstacle_coords[0] + self.cactiPic.width() and
                 dino_coords[0] + dino_width > obstacle_coords[0] and
