@@ -1,7 +1,6 @@
 from tkinter import *
 import tkinter as tk
 import random
-import shutil
 
 obstacle_images = [
     "Python/Программы/Игры/Dino/game_files/cacti1.png", 
@@ -40,13 +39,19 @@ class DinoGame:
         self.dino_game_over_img = PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino5.png")
         self.cloud = PhotoImage(file="Python/Программы/Игры/Dino/game_files/cloud.png")
         self.bg = PhotoImage(file="Python/Программы/Игры/Dino/game_files/bg.png")
+        self.ground_texture = PhotoImage(file="Python/Программы/Игры/Dino/game_files/texture.png")
+
         self.canvas = tk.Canvas(master, bg="white", width=600, height=400)    
         self.canvas.bind("<ButtonPress-1>", self.on_canvas_click)
         self.canvas.pack()
+        
         self.canvas.create_image(300, 200, image=self.bg)
+
         self.cloud1 = self.canvas.create_image(100, 50, image=self.cloud)
         self.cloud2 = self.canvas.create_image(400, 80, image=self.cloud)
 
+        self.ground1 = self.canvas.create_image(0, 315, image=self.ground_texture, anchor='nw')
+        self.ground2 = self.canvas.create_image(600, 315, image=self.ground_texture, anchor='nw')
         self.dino = self.canvas.create_image(100, 310, image=self.dino_run_frames[0])
         self.obstacle = None
         self.velocity = 0
@@ -67,6 +72,8 @@ class DinoGame:
         self.speed = -7.5
         self.canvas.delete("all")
         self.canvas.create_image(300, 200, image=self.bg)
+        self.ground1 = self.canvas.create_image(0, 315, image=self.ground_texture, anchor='nw')
+        self.ground2 = self.canvas.create_image(600, 315, image=self.ground_texture, anchor='nw')
         self.cloud1 = self.canvas.create_image(100, 50, image=self.cloud)
         self.cloud2 = self.canvas.create_image(400, 80, image=self.cloud)
         self.score_text = self.canvas.create_text(590, 10, text="Счёт: 0", font=("Arial", 8), fill="black", anchor="ne")
@@ -123,6 +130,7 @@ class DinoGame:
 
             self.canvas.move(self.obstacle, speed, 0)
             obstacle_coords = self.canvas.coords(self.obstacle)
+
             if self.check_collision():
                 self.is_game_over = True
                 self.canvas.itemconfig(self.dino, image=self.dino_game_over_img)
@@ -136,28 +144,33 @@ class DinoGame:
                     speed -= 0.1 
                     self.create_obstacle()
 
-            self.move_clouds()   
-            self.master.after(17, self.update_game)  
+            self.move_clouds()
+            self.move_ground()
+            self.master.after(17, self.update_game)
 
     def move_clouds(self):
         self.canvas.move(self.cloud1, speed * 0.5, 0)
         self.canvas.move(self.cloud2, speed * 0.5, 0)
-
         if self.canvas.coords(self.cloud1)[0] < -50:
             self.canvas.move(self.cloud1, 700, 0)
         if self.canvas.coords(self.cloud2)[0] < -50:
             self.canvas.move(self.cloud2, 700, 0)
 
+    def move_ground(self):
+        self.canvas.move(self.ground1, speed, 0)
+        self.canvas.move(self.ground2, speed, 0)
+        if self.canvas.coords(self.ground1)[0] < -600:
+            self.canvas.move(self.ground1, 1200, 0)
+        if self.canvas.coords(self.ground2)[0] < -600:
+            self.canvas.move(self.ground2, 1200, 0)
+
     def check_collision(self):
         dino_coords = self.canvas.coords(self.dino)
         obstacle_coords = self.canvas.coords(self.obstacle)
-
         if not dino_coords or not obstacle_coords:
             return False
-
         dino_width = self.dino_jump_img.width() if self.jumping else self.dino_run_frames[0].width()
         dino_height = self.dino_jump_img.height() if self.jumping else self.dino_run_frames[0].height()
-
         if self.is_ptero:
             if (dino_coords[0] < obstacle_coords[0] + self.cactiPic.width() and
                 dino_coords[0] + dino_width > obstacle_coords[0] and
