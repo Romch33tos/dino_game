@@ -1,6 +1,7 @@
 from tkinter import *
 import tkinter as tk
 import random
+import os
 
 obstacle_images = [
     "Python/Программы/Игры/Dino/game_files/cacti1.png",
@@ -15,8 +16,9 @@ ptero_images = [
     "Python/Программы/Игры/Dino/game_files/pt2.png"
 ]
 
-INITIAL_SPEED = -6.5
+INITIAL_SPEED = -7.5
 SPEED_INCREMENT = 0.1
+RECORDS_FILE = "Python/Программы/Игры/Dino/game_files/records.txt"
 
 class DinoGame:
     def __init__(self, master):
@@ -25,10 +27,12 @@ class DinoGame:
         self.master.geometry("600x400")
         self.master.resizable(False, False)
         self.master.protocol("WM_DELETE_WINDOW", self.quit_game)
+
         self.load_images()
         self.setup_game()
+        self.high_score = self.load_high_score()
         self.reset_game_state()
-        
+
     def load_images(self):
         self.dino_run_frames = [
             PhotoImage(file="Python/Программы/Игры/Dino/game_files/dino.png"),
@@ -62,10 +66,27 @@ class DinoGame:
         self.canvas.create_image(300, 200, image=self.bg)
         self.ground1 = self.canvas.create_image(0, 315, image=self.ground_texture, anchor='nw')
         self.ground2 = self.canvas.create_image(600, 315, image=self.ground_texture, anchor='nw')
-        self.cloud1 = self.canvas.create_image(700, 50, image=self.cloud_image)
-        self.cloud2 = self.canvas.create_image(1000, 80, image=self.cloud_image2)
+        self.cloud1 = self.canvas.create_image(700, 110, image=self.cloud_image)
+        self.cloud2 = self.canvas.create_image(1000, 140, image=self.cloud_image2)
         self.dino = self.canvas.create_image(100, 310, image=self.dino_run_frames[0])
         self.score_text = self.canvas.create_text(590, 10, text="Счёт: 0", font=("Arial", 8), fill="black", anchor="ne")
+        self.high_score_text = self.canvas.create_text(590, 50, text=f"Рекорд: {self.high_score}", font=("Arial", 6), fill="black", anchor="ne")
+
+    def load_high_score(self):
+        try:
+            if os.path.exists(RECORDS_FILE):
+                with open(RECORDS_FILE, 'r') as f:
+                    return int(f.read())
+        except:
+            pass
+        return 0
+
+    def save_high_score(self):
+        try:
+            with open(RECORDS_FILE, 'w') as f:
+                f.write(str(self.high_score))
+        except:
+            pass
 
     def start_game(self):
         self.reset_game_state()
@@ -103,12 +124,14 @@ class DinoGame:
                 if self.animation_counter % 4 == 0:
                     self.current_frame = (self.current_frame + 1) % len(self.dino_run_frames)
                     self.canvas.itemconfig(self.dino, image=self.dino_run_frames[self.current_frame])
+
             if self.is_ptero and self.obstacle:
                 self.ptero_animation_counter += 1
                 if self.ptero_animation_counter % 10 == 0:
                     self.ptero_frame = (self.ptero_frame + 1) % len(ptero_images)
                     self.cactiPic = PhotoImage(file=ptero_images[self.ptero_frame])
                     self.canvas.itemconfig(self.obstacle, image=self.cactiPic)
+
             if self.jumping:
                 self.canvas.move(self.dino, 0, self.velocity)
                 self.velocity += self.gravity
@@ -116,8 +139,10 @@ class DinoGame:
                     self.canvas.move(self.dino, 0, 310 - self.canvas.coords(self.dino)[1])
                     self.jumping = False
                     self.canvas.itemconfig(self.dino, image=self.dino_run_frames[0])
+
             self.canvas.move(self.obstacle, self.speed, 0)
             obstacle_coords = self.canvas.coords(self.obstacle)
+
             if self.check_collision():
                 self.game_over()
             elif obstacle_coords[0] < -50:
@@ -126,6 +151,7 @@ class DinoGame:
                 self.update_score()
                 self.speed -= SPEED_INCREMENT
                 self.create_obstacle()
+
             self.move_clouds()
             self.move_ground()
             self.master.after(17, self.update_game)
@@ -149,16 +175,21 @@ class DinoGame:
     def check_collision(self):
         dino_coords = self.canvas.coords(self.dino)
         obstacle_coords = self.canvas.coords(self.obstacle)
+
         if not dino_coords or not obstacle_coords:
             return False
+
         dino_img = self.dino_jump_img if self.jumping else self.dino_run_frames[0]
         dino_width = dino_img.width()
         dino_height = dino_img.height()
+
         dino_collision_width = dino_width * 0.8
         dino_x_offset = (dino_width - dino_collision_width) / 2
         dino_collision_height = dino_height * 0.7
+
         obstacle_width = self.cactiPic.width()
         obstacle_height = self.cactiPic.height()
+
         if self.is_ptero:
             if self.ptero_height == 220 and not self.jumping:
                 return False
@@ -169,6 +200,7 @@ class DinoGame:
             obstacle_collision_width = obstacle_width * 0.8
             obstacle_x_offset = (obstacle_width - obstacle_collision_width) / 2
             obstacle_collision_height = obstacle_height * 0.9
+
         if (dino_coords[0] + dino_collision_width - dino_x_offset > obstacle_coords[0] - obstacle_x_offset and
             dino_coords[0] + dino_x_offset < obstacle_coords[0] + obstacle_collision_width - obstacle_x_offset and
             dino_coords[1] + dino_collision_height > obstacle_coords[1] + (obstacle_height - obstacle_collision_height)):
@@ -182,6 +214,10 @@ class DinoGame:
         self.is_game_over = True
         self.canvas.itemconfig(self.dino, image=self.dino_game_over_img)
         self.canvas.create_text(300, 200, text="Конец игры!", font=("Arial", 12), fill="black")
+        if self.score > self.high_score:
+            self.high_score = self.score
+            self.save_high_score()
+            self.canvas.itemconfig(self.high_score_text, text=f"Рекорд: {self.high_score}")
 
     def update_score(self):
         self.canvas.itemconfig(self.score_text, text=f"Счёт: {self.score}")
