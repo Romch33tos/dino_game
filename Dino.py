@@ -10,8 +10,7 @@ obstacle_images = [
     "cacti.png",
     "cacti2.png",
     "cacti3.png",
-    "cacti4.png",
-    "cacti5.png"
+    "cacti4.png"
 ]
 
 ptero_images = [
@@ -107,32 +106,9 @@ class DinoGame:
         self.reset_game_state()
         self.is_game_over = False
         self.game_started = True
-
-        if self.first_game:
-            self.first_game = False
-            self.jumping = True
-            self.velocity = -14
-            self.gravity = 0.7
-            self.canvas.itemconfig(self.dino, image=self.dino_jump_img)
-            self.master.after(16, self.update_jump_before_game)
-        else:
-            self.last_score_time = time.time()
-            self.create_obstacle()
-            self.update_game()
-
-    def update_jump_before_game(self):
-        if self.jumping:
-            self.canvas.move(self.dino, 0, self.velocity)
-            self.velocity += self.gravity
-            if self.canvas.coords(self.dino)[1] >= 310:
-                self.canvas.move(self.dino, 0, 310 - self.canvas.coords(self.dino)[1])
-                self.jumping = False
-                self.canvas.itemconfig(self.dino, image=self.dino_run_frames[0])
-                self.last_score_time = time.time()
-                self.create_obstacle()
-                self.update_game()
-            else:
-                self.master.after(16, self.update_jump_before_game)
+        self.last_score_time = time.time()
+        self.create_obstacle()
+        self.update_game()
 
     def on_space_or_click(self, event):
         if not self.game_started:
