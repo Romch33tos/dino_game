@@ -1,4 +1,4 @@
-from tkinter import Tk, Canvas, PhotoImage
+from tkinter import Tk, Canvas, PhotoImage, Menu, messagebox
 import random
 import os
 import pygame
@@ -38,6 +38,7 @@ class DinoGame:
     self.master.bind("<Button-1>", self.on_mouse_click)
     self.master.bind("<Down>", self.on_down_press)
 
+    self.create_menu()
     self.load_images()
     self.load_sounds()
     self.setup_game()
@@ -46,6 +47,27 @@ class DinoGame:
     self.reset_game_state()
     self.first_game = True
     self.game_started = False
+    
+    self.show_start_screen()
+
+  def create_menu(self):
+    menubar = Menu(self.master)
+    help_menu = Menu(menubar, tearoff=0)
+    help_menu.add_command(label="Как играть?", command=self.show_help)
+    help_menu.add_command(label="Об игре", command=self.show_info)
+    menubar.add_cascade(label="Справка", menu=help_menu)
+    
+    self.master.config(menu=menubar)
+
+  def show_help(self):
+    messagebox.showinfo(title = "Справка", message = "Как играть?", detail = "- Нажмите пробел или кликните мышкой, чтобы начать!" \
+    "\n- Перепрыгивайте через препятствия, нажимая пробел.\n- Уворачивайтесь от птеродактилей, нажимая клавишу ↓.\n- Чтобы вернуться к обычному бегу, нажмите ↓ еще раз.\n- Кликните мышкой, чтобы начать новую игру!")
+
+  def show_info(self):
+    messagebox.showinfo(title = "Справка", message = "Об игре", detail = "Данная игра разработана как индивидуальный проект по дисциплине «Информационные системы и технологии». Управляйте динозавриком, преодолевая препятствия и постарайтесь набрать как можно больше очков!")
+
+  def show_start_screen(self):
+    self.canvas.create_text(300, 200, text="Р-р-р! Нажми пробел, чтобы начать!", font=("Arial", 16), fill="black", tags="start_screen")
 
   def load_images(self):
     self.dino_run_frames = [
@@ -108,6 +130,7 @@ class DinoGame:
       f.write(str(self.high_score))
 
   def start_game(self):
+    self.canvas.delete("start_screen")
     self.reset_game_state()
     self.is_game_over = False
     self.game_started = True
@@ -122,7 +145,9 @@ class DinoGame:
       self.jump()
 
   def on_mouse_click(self, event):
-    if self.is_game_over:
+    if not self.game_started:
+      self.start_game()
+    elif self.is_game_over:
       self.start_game()
 
   def on_down_press(self, event):
@@ -260,7 +285,8 @@ class DinoGame:
     if self.ducking:
       self.canvas.coords(self.dino, 100, 310)
     self.canvas.itemconfig(self.dino, image=self.dino_game_over_img)
-    self.canvas.create_text(300, 200, text="Конец игры!", font=("Arial", 20), fill="black")
+    self.canvas.create_text(300, 200, text="Конец игры!", font=("Arial", 16), fill="black")
+    self.canvas.create_text(300, 230, text="Кликните мышкой, чтобы начать заново!", font=("Arial", 16), fill="black")
     self.sound_game_over.play()
     if self.score > self.high_score:
       self.high_score = self.score
