@@ -36,6 +36,7 @@ class DinoGame:
         
     self.master.bind("<space>", self.on_space_or_click)
     self.master.bind("<Button-1>", self.on_mouse_click)
+    self.master.bind("<Down>", self.on_down_press)
 
     self.load_images()
     self.load_sounds()
@@ -51,6 +52,10 @@ class DinoGame:
       PhotoImage(file="dino.png"),
       PhotoImage(file="dino2.png"),
       PhotoImage(file="dino3.png")
+    ]
+    self.dino_duck_frames = [
+      PhotoImage(file="dino_duck.png"),
+      PhotoImage(file="dino_duck2.png")
     ]
     self.dino_jump_img = PhotoImage(file="dino.png")
     self.dino_game_over_img = PhotoImage(file="dino4.png")
@@ -75,6 +80,7 @@ class DinoGame:
     self.last_score_time = 0
     self.is_game_over = True
     self.jumping = False
+    self.ducking = False
     self.velocity = 0
     self.current_frame = 0
     self.animation_counter = 0
@@ -112,15 +118,23 @@ class DinoGame:
   def on_space_or_click(self, event):
     if not self.game_started:
       self.start_game()
-    elif not self.is_game_over:
+    elif not self.is_game_over and not self.ducking:
       self.jump()
 
   def on_mouse_click(self, event):
     if self.is_game_over:
       self.start_game()
 
+  def on_down_press(self, event):
+    if not self.is_game_over and not self.jumping:
+      self.ducking = not self.ducking
+      if self.ducking:
+        self.canvas.coords(self.dino, 100, 320)
+      else:
+        self.canvas.coords(self.dino, 100, 310)
+
   def create_obstacle(self):
-    self.is_ptero = random.random() < 0.3
+    self.is_ptero = random.random() < 1
     if self.is_ptero:
       self.ptero_height = random.choice([220, 280, 290])
       self.cactiPic = PhotoImage(file=random.choice(ptero_images))
@@ -149,11 +163,16 @@ class DinoGame:
         self.last_score_time = current_time
         self.update_score()
       
-      if not self.jumping:
+      if not self.jumping and not self.ducking:
         self.animation_counter += 1
         if self.animation_counter % 4 == 0:
           self.current_frame = (self.current_frame + 1) % len(self.dino_run_frames)
           self.canvas.itemconfig(self.dino, image=self.dino_run_frames[self.current_frame])
+      elif self.ducking:
+        self.animation_counter += 1
+        if self.animation_counter % 4 == 0:
+          self.current_frame = (self.current_frame + 1) % len(self.dino_duck_frames)
+          self.canvas.itemconfig(self.dino, image=self.dino_duck_frames[self.current_frame])
       
       if self.is_ptero and hasattr(self, "obstacle"):
         self.ptero_animation_counter += 1
@@ -206,18 +225,18 @@ class DinoGame:
     if not dino_coords or not obstacle_coords:
       return False
 
-    dino_img = self.dino_jump_img if self.jumping else self.dino_run_frames[0]
+    dino_img = self.dino_jump_img if self.jumping else self.dino_run_frames[0] if not self.ducking else self.dino_duck_frames[0]
     dino_width = dino_img.width()
     dino_height = dino_img.height()
     dino_collision_width = dino_width * 0.8
     dino_x_offset = (dino_width - dino_collision_width) / 2
-    dino_collision_height = dino_height * 0.7
+    dino_collision_height = dino_height * 0.7 if not self.ducking else dino_height * 0.5
 
     obstacle_width = self.cactiPic.width()
     obstacle_height = self.cactiPic.height()
 
     if self.is_ptero:
-      if self.ptero_height == 220 and not self.jumping:
+      if self.ptero_height == 220 and (self.ducking or not self.jumping):
         return False
       obstacle_collision_width = obstacle_width * 0.7
       obstacle_x_offset = (obstacle_width - obstacle_collision_width) / 2
