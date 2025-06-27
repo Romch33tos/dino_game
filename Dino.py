@@ -134,9 +134,9 @@ class DinoGame:
         self.canvas.coords(self.dino, 100, 310)
 
   def create_obstacle(self):
-    self.is_ptero = random.random() < 1
+    self.is_ptero = random.random() < 0.3
     if self.is_ptero:
-      self.ptero_height = random.choice([220, 280, 290])
+      self.ptero_height = random.choice([240, 280, 290])
       self.cactiPic = PhotoImage(file=random.choice(ptero_images))
       self.obstacle = self.canvas.create_image(800, self.ptero_height, image=self.cactiPic)
     else:
@@ -236,7 +236,7 @@ class DinoGame:
     obstacle_height = self.cactiPic.height()
 
     if self.is_ptero:
-      if self.ptero_height == 220 and (self.ducking or not self.jumping):
+      if self.ptero_height == 240 and self.ducking:
         return False
       obstacle_collision_width = obstacle_width * 0.7
       obstacle_x_offset = (obstacle_width - obstacle_collision_width) / 2
@@ -249,7 +249,7 @@ class DinoGame:
     if (dino_coords[0] + dino_collision_width - dino_x_offset > obstacle_coords[0] - obstacle_x_offset and
         dino_coords[0] + dino_x_offset < obstacle_coords[0] + obstacle_collision_width - obstacle_x_offset and
         dino_coords[1] + dino_collision_height > obstacle_coords[1] + (obstacle_height - obstacle_collision_height)):
-      if self.is_ptero and self.ptero_height > 220:
+      if self.is_ptero and self.ptero_height > 240:
         if self.jumping and dino_coords[1] < obstacle_coords[1] + obstacle_height / 2:
           return False
       return True
@@ -257,6 +257,8 @@ class DinoGame:
 
   def game_over(self):
     self.is_game_over = True
+    if self.ducking:
+      self.canvas.coords(self.dino, 100, 310)
     self.canvas.itemconfig(self.dino, image=self.dino_game_over_img)
     self.canvas.create_text(300, 200, text="Конец игры!", font=("Arial", 20), fill="black")
     self.sound_game_over.play()
