@@ -33,7 +33,7 @@ class DinoGame:
     self.master.title("Динозаврик")
     self.master.geometry("600x400")
     self.master.resizable(False, False)
-        
+    
     self.master.bind("<space>", self.on_space_or_click)
     self.master.bind("<Button-1>", self.on_mouse_click)
     self.master.bind("<Down>", self.on_down_press)
@@ -56,18 +56,31 @@ class DinoGame:
     help_menu.add_command(label="Как играть?", command=self.show_help)
     help_menu.add_command(label="Об игре", command=self.show_info)
     menubar.add_cascade(label="Справка", menu=help_menu)
-    
+
     self.master.config(menu=menubar)
 
   def show_help(self):
-    messagebox.showinfo(title = "Справка", message = "Как играть?", detail = "- Нажмите пробел или кликните мышкой, чтобы начать!" \
-    "\n- Перепрыгивайте через препятствия, нажимая пробел.\n- Уворачивайтесь от птеродактилей, нажимая клавишу ↓.\n- Чтобы вернуться к обычному бегу, нажмите ↓ еще раз.\n- Кликните мышкой, чтобы начать новую игру!")
+    messagebox.showinfo(
+      title="Справка",
+      message="Как играть?",
+      detail="- Нажмите пробел или кликните мышкой, чтобы начать!\n- Перепрыгивайте через препятствия, нажимая пробел.\n- Уворачивайтесь от птеродактилей, нажимая клавишу ↓.\n- Чтобы вернуться к обычному бегу, нажмите ↓ еще раз.\n- Кликните мышкой, чтобы начать новую игру!"
+    )
 
   def show_info(self):
-    messagebox.showinfo(title = "Справка", message = "Об игре", detail = "Данная игра разработана как индивидуальный проект по дисциплине «Информационные системы и технологии». Управляйте динозавриком, преодолевая препятствия и постарайтесь набрать как можно больше очков!")
+    messagebox.showinfo(
+      title="Справка",
+      message="Об игре",
+      detail="Данная игра разработана как индивидуальный проект по дисциплине «Информационные системы и технологии». Управляйте динозавриком, преодолевая препятствия и постарайтесь набрать как можно больше очков!"
+    )
 
   def show_start_screen(self):
-    self.canvas.create_text(300, 200, text="Р-р-р! Нажми пробел, чтобы начать!", font=("Arial", 16), fill="black", tags="start_screen")
+    self.canvas.create_text(
+      300, 200,
+      text="Р-р-р! Нажми пробел, чтобы начать!",
+      font=("Arial", 16),
+      fill="black",
+      tags="start_screen"
+    )
 
   def load_images(self):
     self.dino_run_frames = [
@@ -116,8 +129,20 @@ class DinoGame:
     self.cloud1 = self.canvas.create_image(700, 110, image=self.cloud_image)
     self.cloud2 = self.canvas.create_image(1000, 140, image=self.cloud_image2)
     self.dino = self.canvas.create_image(100, 310, image=self.dino_run_frames[0])
-    self.score_text = self.canvas.create_text(590, 10, text="Счёт: 0", font=("Arial", 14), fill="black", anchor="ne")
-    self.high_score_text = self.canvas.create_text(590, 40, text=f"Рекорд: {self.high_score}", font=("Arial", 14), fill="black", anchor="ne")
+    self.score_text = self.canvas.create_text(
+      590, 10,
+      text="Счёт: 0",
+      font=("Arial", 14),
+      fill="black",
+      anchor="ne"
+    )
+    self.high_score_text = self.canvas.create_text(
+      590, 40,
+      text=f"Рекорд: {self.high_score}",
+      font=("Arial", 14),
+      fill="black",
+      anchor="ne"
+    )
 
   def load_high_score(self):
     if os.path.exists(RECORDS_FILE):
@@ -285,8 +310,18 @@ class DinoGame:
     if self.ducking:
       self.canvas.coords(self.dino, 100, 310)
     self.canvas.itemconfig(self.dino, image=self.dino_game_over_img)
-    self.canvas.create_text(300, 200, text="Конец игры!", font=("Arial", 16), fill="black")
-    self.canvas.create_text(300, 230, text="Кликните мышкой, чтобы начать заново!", font=("Arial", 16), fill="black")
+    self.canvas.create_text(
+      300, 200,
+      text="Конец игры!",
+      font=("Arial", 16),
+      fill="black"
+    )
+    self.canvas.create_text(
+      300, 230,
+      text="Кликните мышкой, чтобы начать заново!",
+      font=("Arial", 16),
+      fill="black"
+    )
     self.sound_game_over.play()
     if self.score > self.high_score:
       self.high_score = self.score
