@@ -9,8 +9,7 @@ pygame.mixer.init()
 obstacle_images = [
   "cacti.png",
   "cacti2.png",
-  "cacti3.png",
-  "cacti4.png"
+  "cacti3.png"
 ]
 
 ptero_images = [
