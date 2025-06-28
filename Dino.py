@@ -41,6 +41,8 @@ class DinoGame:
     self.master.bind("<space>", self.on_space_or_click)
     self.master.bind("<Button-1>", self.on_mouse_click)
     self.master.bind("<Down>", self.on_down_press)
+    self.master.bind("<KeyRelease-Down>", self.on_down_release)
+    self.down_key_pressed = False
 
     self.create_menu()
     self.load_images()
@@ -54,6 +56,18 @@ class DinoGame:
     
     self.show_start_screen()
 
+  def on_down_press(self, event):
+    if not self.is_game_over and not self.jumping and not self.down_key_pressed:
+      self.down_key_pressed = True
+      self.ducking = True
+      self.canvas.coords(self.dino, 100, 320)
+
+  def on_down_release(self, event):
+    if self.down_key_pressed:
+      self.down_key_pressed = False
+      self.ducking = False
+      self.canvas.coords(self.dino, 100, 310)
+
   def create_menu(self):
     menubar = tk.Menu(self.master)
     help_menu = tk.Menu(menubar, tearoff=0)
@@ -66,7 +80,7 @@ class DinoGame:
     messagebox.showinfo(
       title="Справка",
       message="Как играть?",
-      detail="- Нажмите пробел или кликните мышкой, чтобы начать!\n- Перепрыгивайте через препятствия, нажимая пробел.\n- Уворачивайтесь от птеродактилей, нажимая клавишу ↓.\n- Чтобы вернуться к обычному бегу, нажмите ↓ еще раз.\n- Кликните мышкой, чтобы начать новую игру!"
+      detail="- Нажмите пробел или кликните мышкой, чтобы начать!\n- Перепрыгивайте через препятствия, нажимая пробел.\n- Уворачивайтесь от птеродактилей, удерживая клавишу ↓.\n- Чтобы вернуться к обычному бегу, отпустите клавишу ↓.\n- Кликните мышкой, чтобы начать новую игру!"
     )
 
   def show_info(self):
@@ -89,12 +103,12 @@ class DinoGame:
     self.dino_run_frames = [
       tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino.png")),
       tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_2.png")),
-      tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_3.png"))]
-    
+      tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_3.png"))
+    ]
     self.dino_duck_frames = [
       tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_duck.png")),
-      tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_duck2.png"))]
-    
+      tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_duck2.png"))
+    ]
     self.dino_jump_img = tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino.png"))
     self.dino_game_over_img = tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_4.png"))
     self.cloud_image = tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "cloud.png"))
@@ -124,6 +138,7 @@ class DinoGame:
     self.animation_counter = 0
     self.ptero_frame = 0
     self.ptero_animation_counter = 0
+    self.down_key_pressed = False
 
     self.canvas.delete("all")
     self.canvas.create_image(300, 200, image=self.bg)
@@ -177,14 +192,6 @@ class DinoGame:
       self.start_game()
     elif self.is_game_over:
       self.start_game()
-
-  def on_down_press(self, event):
-    if not self.is_game_over and not self.jumping:
-      self.ducking = not self.ducking
-      if self.ducking:
-        self.canvas.coords(self.dino, 100, 320)
-      else:
-        self.canvas.coords(self.dino, 100, 310)
 
   def create_obstacle(self):
     self.is_ptero = random.random() < 0.3
