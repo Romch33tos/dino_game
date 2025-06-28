@@ -1,31 +1,35 @@
-from tkinter import Tk, Canvas, PhotoImage, Menu, messagebox
-import random
 import os
-import pygame
+import random
 import time
+import tkinter as tk
+from tkinter import messagebox
+import pygame
 
 pygame.mixer.init()
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+GAME_FILES_DIR = os.path.join(BASE_DIR, "game_files")
+
 obstacle_images = [
-  "cacti.png",
-  "cacti2.png",
-  "cacti3.png"
+  os.path.join(GAME_FILES_DIR, "cacti.png"),
+  os.path.join(GAME_FILES_DIR, "cacti_2.png"),
+  os.path.join(GAME_FILES_DIR, "cacti_3.png")
 ]
 
 ptero_images = [
-  "ptero.png",
-  "ptero2.png"
+  os.path.join(GAME_FILES_DIR, "ptero.png"),
+  os.path.join(GAME_FILES_DIR, "ptero_2.png")
 ]
 
-SOUND_JUMP = "jump.mp3"
-SOUND_GAME_OVER = "game_over.mp3"
-SOUND_POINT = "point.mp3"
+SOUND_JUMP = os.path.join(GAME_FILES_DIR, "jump.mp3")
+SOUND_GAME_OVER = os.path.join(GAME_FILES_DIR, "game_over.mp3")
+SOUND_POINT = os.path.join(GAME_FILES_DIR, "point.mp3")
 
 INITIAL_SPEED = -7.5
 SPEED_INCREMENT = 0.1
 SCORE_RATE = 10
 POINT_MILESTONE = 100
-RECORDS_FILE = "records.txt"
+RECORDS_FILE = os.path.join(GAME_FILES_DIR, "records.txt")
 
 class DinoGame:
   def __init__(self, master):
@@ -51,12 +55,11 @@ class DinoGame:
     self.show_start_screen()
 
   def create_menu(self):
-    menubar = Menu(self.master)
-    help_menu = Menu(menubar, tearoff=0)
+    menubar = tk.Menu(self.master)
+    help_menu = tk.Menu(menubar, tearoff=0)
     help_menu.add_command(label="Как играть?", command=self.show_help)
     help_menu.add_command(label="Об игре", command=self.show_info)
     menubar.add_cascade(label="Справка", menu=help_menu)
-
     self.master.config(menu=menubar)
 
   def show_help(self):
@@ -84,20 +87,20 @@ class DinoGame:
 
   def load_images(self):
     self.dino_run_frames = [
-      PhotoImage(file="dino.png"),
-      PhotoImage(file="dino2.png"),
-      PhotoImage(file="dino3.png")
-    ]
+      tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino.png")),
+      tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_2.png")),
+      tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_3.png"))]
+    
     self.dino_duck_frames = [
-      PhotoImage(file="dino_duck.png"),
-      PhotoImage(file="dino_duck2.png")
-    ]
-    self.dino_jump_img = PhotoImage(file="dino.png")
-    self.dino_game_over_img = PhotoImage(file="dino4.png")
-    self.cloud_image = PhotoImage(file="cloud.png")
-    self.cloud_image2 = PhotoImage(file="cloud2.png")
-    self.bg = PhotoImage(file="bg.png")
-    self.ground_texture = PhotoImage(file="texture.png")
+      tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_duck.png")),
+      tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_duck2.png"))]
+    
+    self.dino_jump_img = tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino.png"))
+    self.dino_game_over_img = tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "dino_4.png"))
+    self.cloud_image = tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "cloud.png"))
+    self.cloud_image2 = tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "cloud_2.png"))
+    self.bg = tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "background.png"))
+    self.ground_texture = tk.PhotoImage(file=os.path.join(GAME_FILES_DIR, "texture.png"))
 
   def load_sounds(self):
     self.sound_jump = pygame.mixer.Sound(SOUND_JUMP)
@@ -105,7 +108,7 @@ class DinoGame:
     self.sound_point = pygame.mixer.Sound(SOUND_POINT)
 
   def setup_game(self):
-    self.canvas = Canvas(self.master, bg="white", width=600, height=400)
+    self.canvas = tk.Canvas(self.master, bg="white", width=600, height=400)
     self.canvas.pack()
     self.canvas.create_image(300, 200, image=self.bg)
 
@@ -187,10 +190,10 @@ class DinoGame:
     self.is_ptero = random.random() < 0.3
     if self.is_ptero:
       self.ptero_height = random.choice([240, 280, 290])
-      self.cactiPic = PhotoImage(file=random.choice(ptero_images))
+      self.cactiPic = tk.PhotoImage(file=random.choice(ptero_images))
       self.obstacle = self.canvas.create_image(800, self.ptero_height, image=self.cactiPic)
     else:
-      self.cactiPic = PhotoImage(file=random.choice(obstacle_images))
+      self.cactiPic = tk.PhotoImage(file=random.choice(obstacle_images))
       self.obstacle = self.canvas.create_image(800, 310, image=self.cactiPic)
 
   def jump(self):
@@ -228,7 +231,7 @@ class DinoGame:
         self.ptero_animation_counter += 1
         if self.ptero_animation_counter % 10 == 0:
           self.ptero_frame = (self.ptero_frame + 1) % len(ptero_images)
-          self.cactiPic = PhotoImage(file=ptero_images[self.ptero_frame])
+          self.cactiPic = tk.PhotoImage(file=ptero_images[self.ptero_frame])
           self.canvas.itemconfig(self.obstacle, image=self.cactiPic)
       
       if self.jumping:
@@ -332,6 +335,6 @@ class DinoGame:
     self.canvas.itemconfig(self.score_text, text=f"Счёт: {self.score}")
 
 if __name__ == "__main__":
-  root = Tk()
+  root = tk.Tk()
   game = DinoGame(root)
   root.mainloop()
