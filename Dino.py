@@ -163,14 +163,29 @@ class DinoGame:
     )
 
   def load_high_score(self):
-    if os.path.exists(RECORDS_FILE):
+    try:
+      if not os.path.exists(GAME_FILES_DIR):
+        os.makedirs(GAME_FILES_DIR)
+        
+      if not os.path.exists(RECORDS_FILE):
+        with open(RECORDS_FILE, 'w') as f:
+          f.write("0")
+        return 0
+      
       with open(RECORDS_FILE, 'r') as f:
         return int(f.read())
-    return 0
+    except (IOError, ValueError):
+      return 0
 
   def save_high_score(self):
-    with open(RECORDS_FILE, 'w') as f:
-      f.write(str(self.high_score))
+    try:
+      if not os.path.exists(GAME_FILES_DIR):
+        os.makedirs(GAME_FILES_DIR)
+        
+      with open(RECORDS_FILE, 'w') as f:
+        f.write(str(self.high_score))
+    except IOError:
+      pass
 
   def start_game(self):
     self.canvas.delete("start_screen")
