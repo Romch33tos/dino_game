@@ -37,7 +37,10 @@ class DinoGame:
     self.master.title("Динозаврик")
     self.master.geometry("600x400")
     self.master.resizable(False, False)
-    
+
+    home_dir = os.path.expanduser("~")
+    self.RECORDS_FILE = os.path.join(home_dir, "dino_game_records.txt")
+
     self.master.bind("<space>", self.on_space_or_click)
     self.master.bind("<Button-1>", self.on_mouse_click)
     self.master.bind("<Down>", self.on_down_press)
@@ -93,7 +96,7 @@ class DinoGame:
   def show_start_screen(self):
     self.canvas.create_text(
       300, 200,
-      text="Р-р-р! Нажми пробел, чтобы начать!",
+      text="Р-р-р! Нажмите пробел, чтобы начать!",
       font=("Arial", 16),
       fill="black",
       tags="start_screen"
@@ -163,14 +166,25 @@ class DinoGame:
     )
 
   def load_high_score(self):
-    if os.path.exists(RECORDS_FILE):
-      with open(RECORDS_FILE, 'r') as f:
-        return int(f.read())
-    return 0
+    try:
+      if not os.path.exists(self.RECORDS_FILE):
+        with open(self.RECORDS_FILE, 'w') as f:
+          f.write("0")
+        return 0
+    
+      with open(self.RECORDS_FILE, 'r') as f:
+        content = f.read().strip()
+        return int(content) if content.isdigit() else 0
+        
+    except Exception:
+      return 0
 
   def save_high_score(self):
-    with open(RECORDS_FILE, 'w') as f:
-      f.write(str(self.high_score))
+    try:
+      with open(self.RECORDS_FILE, 'w') as f:
+        f.write(str(self.high_score))
+    except Exception:
+      pass
 
   def start_game(self):
     self.canvas.delete("start_screen")

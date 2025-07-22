@@ -13,10 +13,10 @@
 
 ## 📸 Скриншоты  
 
-| ![Начало игры](https://github.com/user-attachments/assets/b53d8b6d-f41d-4d63-aaa7-4d588eeaa659) | ![Подпункты меню](https://github.com/user-attachments/assets/c93b6324-7809-4222-97bb-9a303e6a403d) |
+| ![Начальный экран игры](https://github.com/user-attachments/assets/7dfc4295-4478-45b9-8423-46861c32e9cf) | ![Меню с подпунктами](https://github.com/user-attachments/assets/f6a0158d-41c7-4966-b273-2869f2cb309d) |
 |:----------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------:|
 | *Начальный экран игры*                                                                         | *Меню с подпунктами*                                                                              |
-| ![Справка](https://github.com/user-attachments/assets/e8165697-cc09-4f7d-bf5a-f06b7d722b59)     | ![Об игре](https://github.com/user-attachments/assets/d6b59076-b377-42f8-aad9-3240746416ec)       |
+| ![Справка](https://github.com/user-attachments/assets/e8165697-cc09-4f7d-bf5a-f06b7d722b59)    | ![Об игре](https://github.com/user-attachments/assets/d6b59076-b377-42f8-aad9-3240746416ec)       |
 | *Раздел «Как играть?»*                                                                         | *Описание игры*                                                                                   |
-| ![Игровой процесс](https://github.com/user-attachments/assets/570ed97d-1121-42ec-adc8-96241dad3e86) | ![Конец игры](https://github.com/user-attachments/assets/2c2228d3-1095-459e-8c4b-4fe5a45410f4)    |
-| *Игровой процесс*                                                                              | *Конец игры*                                                                                      |
+| ![Игровой процесс](https://github.com/user-attachments/assets/edabf98d-612b-4225-9e49-8e12179bc43f) | ![Конец игры](https://github.com/user-attachments/assets/2c2228d3-1095-459e-8c4b-4fe5a45410f4)    |
+| *Игровой процесс*                                                                              | *Конец игры*                                                         |
